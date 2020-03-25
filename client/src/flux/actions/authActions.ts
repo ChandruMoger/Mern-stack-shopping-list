@@ -13,11 +13,11 @@ import {
 import { IAuthFunction, IConfigHeaders } from '../../types/interfaces';
 
 // Check token & load user
-export const loadUser = () => (dispatch: Function, getState: Function) => {
+export const loadUser = () => async (dispatch: Function, getState: Function) => {
   // User loading
   dispatch({ type: USER_LOADING });
 
-  axios
+  await axios
     .get('/api/auth/user', tokenConfig(getState))
     .then(res =>
       dispatch({
@@ -34,7 +34,7 @@ export const loadUser = () => (dispatch: Function, getState: Function) => {
 };
 
 // Register User
-export const register = ({ name, email, password }: IAuthFunction) => (
+export const register = ({ name, email, password }: IAuthFunction) => async (
   dispatch: Function
 ) => {
   // Headers
@@ -47,7 +47,7 @@ export const register = ({ name, email, password }: IAuthFunction) => (
   // Request body
   const body = JSON.stringify({ name, email, password });
 
-  axios
+  await axios
     .post('/api/auth/register', body, config)
     .then(res =>
       dispatch({
@@ -66,7 +66,7 @@ export const register = ({ name, email, password }: IAuthFunction) => (
 };
 
 // Login User
-export const login = ({ email, password }: IAuthFunction) => (
+export const login = ({ email, password }: IAuthFunction) => async (
   dispatch: Function
 ) => {
   // Headers
@@ -79,7 +79,7 @@ export const login = ({ email, password }: IAuthFunction) => (
   // Request body
   const body = JSON.stringify({ email, password });
 
-  axios
+  await axios
     .post('/api/auth/login', body, config)
     .then(res =>
       dispatch({
@@ -107,6 +107,7 @@ export const logout = () => {
 // Setup config/headers and token
 export const tokenConfig = (getState: Function) => {
   // Get token from localstorage
+  console.log('token', getState().auth);
   const token = getState().auth.token;
 
   // Headers

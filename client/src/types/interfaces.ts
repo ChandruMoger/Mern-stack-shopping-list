@@ -71,6 +71,7 @@ export interface IExistingItem {
 export interface IItem {
   _id?: string;
   name: string;
+  userId?: string
 }
 
 export interface IItemModal {

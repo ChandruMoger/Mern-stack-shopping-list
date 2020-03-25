@@ -16,22 +16,17 @@ import { login } from '../../flux/actions/authActions';
 import { clearErrors } from '../../flux/actions/errorActions';
 import { ILoginModal, ITarget, IAuthReduxProps } from '../../types/interfaces';
 
-const LoginModal = ({
-  isAuthenticated,
-  error,
-  login,
-  clearErrors
-}: ILoginModal) => {
+const LoginModal = ( props: ILoginModal) => {
   const [modal, setModal] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [msg, setMsg] = useState(null);
-
+  const { isAuthenticated, error } = props;
   const handleToggle = useCallback(() => {
     // Clear errors
-    clearErrors();
+    props.clearErrors();
     setModal(!modal);
-  }, [clearErrors, modal]);
+  }, [props.clearErrors, modal]);
 
   const handleChangeEmail = (e: ITarget) => setEmail(e.target.value);
   const handleChangePassword = (e: ITarget) => setPassword(e.target.value);
@@ -42,7 +37,7 @@ const LoginModal = ({
     const user = { email, password };
 
     // Attempt to login
-    login(user);
+    props.login(user);
   };
 
   useEffect(() => {
@@ -113,4 +108,11 @@ const mapStateToProps = (state: IAuthReduxProps) => ({
   error: state.error
 });
 
-export default connect(mapStateToProps, { login, clearErrors })(LoginModal);
+const mapDispatchToProps = (dispatch:any) => {
+  return {
+    login: (user: any) => dispatch(login(user)),
+    clearErrors: () => dispatch(clearErrors())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginModal);

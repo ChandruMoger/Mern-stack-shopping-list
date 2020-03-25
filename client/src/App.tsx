@@ -1,32 +1,62 @@
-import React, { useEffect } from 'react';
+import React, { Component } from 'react';
 import AppNavbar from './components/AppNavbar';
-import ShoppingList from './components/ShoppingList';
 import ItemModal from './components/ItemModal';
 import { Container } from 'reactstrap';
-
-import { Provider } from 'react-redux';
-import store from './flux/store';
 import { loadUser } from './flux/actions/authActions';
+import { IItemReduxProps } from './types/interfaces';
+import { connect } from 'react-redux';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import ShoppingList from './components/ShoppingList';
 
-const App = () => {
-  useEffect(() => {
-    store.dispatch(loadUser());
-  }, []);
+interface IProps {
+  isAuthenticated: boolean,
+  loadUser: () => {}
+}
 
-  return (
-    <Provider store={store}>
+class App extends Component<IProps>  {
+
+  public componentDidMount() {
+    console.log("Did mount called")
+    this.props.loadUser();
+  }
+  
+  public shouldComponentUpdate(nextProps: IProps) {
+    console.log("Should update called") 
+    return true
+  }
+
+  public async componentDidUpdate() {
+    await this.props.loadUser();
+    console.log("Did Update called")
+  }
+
+
+  render() { 
+    const { isAuthenticated } = this.props;
+    console.log("Parent loaded")
+  return (      
       <div className="App">
         <AppNavbar />
         <Container>
           <ItemModal />
-          <ShoppingList />
+          {isAuthenticated ? 
+          <ShoppingList /> : null}          
         </Container>
       </div>
-    </Provider>
-  );
+  )
+} 
 };
 
-export default App;
+const mapStateToProps = (state: IItemReduxProps) => ({
+  isAuthenticated: state.auth.isAuthenticated
+});
+
+const mapDispatchToProps = (dispatch:any) => {
+  return {
+    loadUser: () => dispatch(loadUser())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

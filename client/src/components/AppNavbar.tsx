@@ -12,13 +12,14 @@ import { connect } from 'react-redux';
 import RegisterModal from './auth/RegisterModal';
 import LoginModal from './auth/LoginModal';
 import Logout from './auth/Logout';
-import { IAppNavbar, IAuthReduxProps } from '../types/interfaces';
+import { IAuthReduxProps } from '../types/interfaces';
 
-const AppNavbar = ({ auth }: IAppNavbar) => {
+const AppNavbar = (props: any) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleToggle = () => setIsOpen(!isOpen);
-
+  console.log(props)
+  const { auth } = props;
   const authLinks = (
     <Fragment>
       <NavItem>

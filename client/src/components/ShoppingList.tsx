@@ -5,29 +5,28 @@ import { connect } from 'react-redux';
 import { getItems, deleteItem } from '../flux/actions/itemActions';
 import { IItemReduxProps, IShoppingList } from '../types/interfaces';
 
-const ShoppingList = ({
-  getItems,
-  item,
-  isAuthenticated,
-  deleteItem
-}: IShoppingList) => {
+const ShoppingList = (props: IShoppingList) => {
+  let items = [];
   useEffect(() => {
-    getItems();
-  }, [getItems]);
+    props.getItems();
+  }, [props.getItems]);
 
   const handleDelete = (id: string) => {
-    deleteItem(id);
+    props.deleteItem(id); 
   };
 
-  const { items } = item;
+  
+  const { item, isAuthenticated} = props
+  items = item.items;  
+  console.log("Child loaded")  
   return (
     <Container>
+      {isAuthenticated ? (
       <ListGroup>
         <TransitionGroup className="shopping-list">
           {items.map(({ _id, name }) => (
             <CSSTransition key={_id} timeout={500} classNames="fade">
               <ListGroupItem>
-                {isAuthenticated ? (
                   <Button
                     className="remove-btn"
                     color="danger"
@@ -36,13 +35,13 @@ const ShoppingList = ({
                   >
                     &times;
                   </Button>
-                ) : null}
                 {name}
               </ListGroupItem>
             </CSSTransition>
           ))}
         </TransitionGroup>
       </ListGroup>
+      ) : null}
     </Container>
   );
 };
@@ -52,4 +51,11 @@ const mapStateToProps = (state: IItemReduxProps) => ({
   isAuthenticated: state.auth.isAuthenticated
 });
 
-export default connect(mapStateToProps, { getItems, deleteItem })(ShoppingList);
+const mapDispatchToProps = (dispatch:any) => {
+  return {
+    getItems: () => dispatch(getItems()),
+    deleteItem: (id: any) => dispatch(deleteItem(id))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ShoppingList);

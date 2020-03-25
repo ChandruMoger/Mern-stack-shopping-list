@@ -11,9 +11,10 @@ const router = Router();
  * @access  Public
  */
 
-router.get('/', async (req, res) => {
+router.get('/:userId', async (req, res) => {
+  const userId = req.params.userId;
   try {
-    const items = await Item.find();
+    const items = await Item.find({ userId: userId});
     if (!items) throw Error('No items');
 
     res.status(200).json(items);
@@ -30,7 +31,8 @@ router.get('/', async (req, res) => {
 
 router.post('/', auth, async (req, res) => {
   const newItem = new Item({
-    name: req.body.name
+    name: req.body.name,
+    userId: req.body.userId
   });
 
   try {

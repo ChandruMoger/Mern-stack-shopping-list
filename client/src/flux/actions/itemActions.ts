@@ -3,11 +3,12 @@ import { GET_ITEMS, ADD_ITEM, DELETE_ITEM, ITEMS_LOADING } from './types';
 import { tokenConfig } from './authActions';
 import { returnErrors } from './errorActions';
 import { IItem } from '../../types/interfaces';
-
-export const getItems = () => (dispatch: Function) => {
+export const getItems = () => async (dispatch: Function, getState: Function) => {
   dispatch(setItemsLoading());
-  axios
-    .get('/api/items')
+  let user = getState().auth.user;
+  let userId = user._id ? user._id : user.id;  
+  await axios
+    .get(`/api/items/${userId}`)
     .then(res =>
       dispatch({
         type: GET_ITEMS,
@@ -19,11 +20,14 @@ export const getItems = () => (dispatch: Function) => {
     );
 };
 
-export const addItem = (item: IItem) => (
+export const addItem = (item: IItem) => async (
   dispatch: Function,
   getState: Function
 ) => {
-  axios
+  let user = getState().auth.user;
+  let userId = user._id ? user._id : user.id;
+  item.userId = userId  
+  await  axios
     .post('/api/items', item, tokenConfig(getState))
     .then(res =>
       dispatch({
@@ -36,11 +40,11 @@ export const addItem = (item: IItem) => (
     );
 };
 
-export const deleteItem = (id: string) => (
+export const deleteItem = (id: string) => async (
   dispatch: Function,
   getState: Function
 ) => {
-  axios
+  await axios
     .delete(`/api/items/${id}`, tokenConfig(getState))
     .then(res =>
       dispatch({
